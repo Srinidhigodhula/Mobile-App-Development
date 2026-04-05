@@ -79,6 +79,19 @@ class HomeScreen extends StatelessWidget {
                 icon: const Icon(Icons.touch_app),
                 label: const Text('Go to Gesture Lab'),
               ),
+              const SizedBox(height: 20),
+              ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const NavigationLabScreen(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.map),
+                label: const Text('Go to Navigation Lab (Week 5)'),
+              ),
             ],
           ),
         ),
@@ -151,7 +164,10 @@ class _InteractiveScreenState extends State<InteractiveScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 30,
+                  vertical: 15,
+                ),
               ),
               child: const Text('Update Text'),
             ),
@@ -187,7 +203,9 @@ class _GestureScreenState extends State<GestureScreen> {
   void _handleLongPress() {
     setState(() {
       _borderRadius = _borderRadius == 16.0 ? 100.0 : 16.0;
-      _actionText = _borderRadius == 100.0 ? 'Long Pressed! Shape rounded.' : 'Long Pressed! Shape squared.';
+      _actionText = _borderRadius == 100.0
+          ? 'Long Pressed! Shape rounded.'
+          : 'Long Pressed! Shape squared.';
     });
   }
 
@@ -234,7 +252,7 @@ class _GestureScreenState extends State<GestureScreen> {
                       color: Colors.black26,
                       blurRadius: 10,
                       offset: Offset(0, 5),
-                    )
+                    ),
                   ],
                 ),
                 alignment: Alignment.center,
@@ -256,6 +274,131 @@ class _GestureScreenState extends State<GestureScreen> {
                 '• Tap to change color\n• Long Press to change shape\n• Swipe horizontally to count',
                 style: TextStyle(fontSize: 16),
                 textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Screen 4: Demonstrates Navigation and Data Passing (Week 5 Lab)
+class NavigationLabScreen extends StatefulWidget {
+  const NavigationLabScreen({super.key});
+
+  @override
+  State<NavigationLabScreen> createState() => _NavigationLabScreenState();
+}
+
+class _NavigationLabScreenState extends State<NavigationLabScreen> {
+  String _returnedData = 'No data received yet.';
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Navigation Lab (Week 5)'),
+        backgroundColor: Colors.teal,
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Data from Profile Screen:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                _returnedData,
+                style: const TextStyle(fontSize: 16, color: Colors.teal),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 40),
+              ElevatedButton.icon(
+                onPressed: () async {
+                  // Navigate to ProfileSetupScreen and wait for result
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ProfileSetupScreen(),
+                    ),
+                  );
+
+                  // Update UI with the result (handling null if user uses back arrow)
+                  setState(() {
+                    if (result != null) {
+                      _returnedData = result;
+                    } else {
+                      _returnedData = 'User cancelled navigation.';
+                    }
+                  });
+                },
+                icon: const Icon(Icons.arrow_forward),
+                label: const Text('Navigate Forward to Setup'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ProfileSetupScreen extends StatefulWidget {
+  const ProfileSetupScreen({super.key});
+
+  @override
+  State<ProfileSetupScreen> createState() => _ProfileSetupScreenState();
+}
+
+class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Profile Setup'),
+        backgroundColor: Colors.tealAccent,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Enter your profile name:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: _controller,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Profile Name',
+              ),
+            ),
+            const SizedBox(height: 40),
+            ElevatedButton.icon(
+              onPressed: () {
+                // Return data when navigating backward
+                Navigator.pop(context, _controller.text);
+              },
+              icon: const Icon(Icons.save),
+              label: const Text('Navigate Backward & Save'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal,
+                foregroundColor: Colors.white,
               ),
             ),
           ],
